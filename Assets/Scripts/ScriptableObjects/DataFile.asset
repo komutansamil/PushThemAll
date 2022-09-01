@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0c0116be1a97ff46b857ec29bc2303b, type: 3}
   m_Name: DataFile
   m_EditorClassIdentifier: 
-  levelCount: 1
-  islevel: 000100
+  levelCount: 0
+  islevel: 010000

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Pusher : MonoBehaviour
 {
-    float _forceValue = 1f;
+    float _forceValue = 10f;
     // Start is called before the first frame update
 
     private void OnCollisionEnter(Collision hit)
@@ -14,11 +14,9 @@ public class Pusher : MonoBehaviour
             Rigidbody rb = hit.collider.attachedRigidbody;
             if (rb != null)
             {
-                Vector3 forceDirection = hit.collider.gameObject.transform.position - transform.position;
-                forceDirection.y = 0f;
-                forceDirection.Normalize();
-
-                rb.AddForceAtPosition(forceDirection * _forceValue, transform.position, ForceMode.Impulse);
+                Vector3 pos = new Vector3(0, 0, -5);
+                hit.collider.gameObject.transform.position = Vector3.MoveTowards(hit.collider.gameObject.transform.position,
+                     hit.collider.gameObject.transform.position - pos, 2f);
             }
         }
     }

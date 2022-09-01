@@ -12,12 +12,6 @@ public class ConnectorWall : MonoBehaviour
         manager = GameObject.Find("Manager").GetComponent<Manager>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     void OnTriggerEnter(Collider col)
     {
         if (col.gameObject.tag == "Player")
@@ -26,6 +20,7 @@ public class ConnectorWall : MonoBehaviour
             {
                 manager.IslevelCompleted = true;
                 manager.WriteTexts();
+                Destroy(col.gameObject);
                 isTriggered = true;
             }
         }

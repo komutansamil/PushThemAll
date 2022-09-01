@@ -12,6 +12,7 @@ public class EnemyControllor : MonoBehaviour
     bool isPlayerNearTheEnemy = false;
     Rigidbody rb;
     float speed = 5f;
+    [HideInInspector] public bool IsCrashed = false;
     #endregion
 
     // Start is called before the first frame update
@@ -26,20 +27,33 @@ public class EnemyControllor : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (isPlayerNearTheEnemy)
+        if (isPlayerNearTheEnemy && !IsCrashed && manager.IsGameStarted)
         {
             SetDestination();
+        }
+        if(IsCrashed)
+        {
+            StartCoroutine(CrashedEvent());
         }
     }
 
     void SetDestination()
     {
-        agent.SetDestination(target.position);
-        //transform.localPosition += transform.forward * 2f * Time.deltaTime;
-        //rb.AddForce(Vector3.forward * Time.deltaTime * speed);
+        //agent.SetDestination(target.position);
+        transform.localPosition += transform.forward * 2f * Time.deltaTime;
+        rb.AddForce(Vector3.forward * Time.deltaTime * speed);
 
-        //Vector3 distance = target.transform.position - transform.position;
-        //transform.rotation = Quaternion.LookRotation(distance);
+        Vector3 distance = target.transform.position - transform.position;
+        distance.x = target.transform.position.x;
+        transform.rotation = Quaternion.LookRotation(distance);
+    }
+
+    IEnumerator CrashedEvent()
+    {
+        agent.enabled = false;
+        yield return new WaitForSeconds(3f);
+        agent.enabled = true;
+        IsCrashed = false;
     }
 
     void OnTriggerEnter(Collider col)

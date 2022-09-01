@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerControllor : MonoBehaviour
 {
     #region Values
-    float _movementSpeed = 7f;
+    float _movementSpeed = 0.2f;
     float _rotationSpeed = 7f;
     [SerializeField] private Rigidbody rb;
     [SerializeField] private Transform cameraPosition;
@@ -13,6 +13,8 @@ public class PlayerControllor : MonoBehaviour
     [SerializeField] private Animator animator;
     Vector3 distance;
     Vector3 lastPos;
+    float X;
+    float Y;
     #endregion
 
     // Start is called before the first frame update
@@ -29,8 +31,11 @@ public class PlayerControllor : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        PlayerMovementAndRotation();
-        PlayerPushAction();
+        if(manager.IsGameStarted)
+        {
+            PlayerMovementAndRotation();
+            PlayerPushAction();
+        }
     }
 
     void LateUpdate()
@@ -40,23 +45,26 @@ public class PlayerControllor : MonoBehaviour
 
     void PlayerMovementAndRotation()
     {
-        float Z = Input.GetAxisRaw("Vertical");
-        float X = Input.GetAxisRaw("Horizontal");
+        X += Input.GetAxisRaw("Mouse X");
+        Y += Input.GetAxisRaw("Mouse Y");
 
-        if (X > 0 || X < 0 || Z > 0 || Z < 0)
+        if (Input.GetMouseButton(0))
         {
-            Vector3 direction = new Vector3(X * Time.deltaTime * _movementSpeed,
-                0f, Z * Time.deltaTime * _movementSpeed);
-            transform.position += direction;
+            if (Y > 0 || Y < 0 || X > 0 || X < 0)
+            {
+                Vector3 direction = new Vector3(X * Time.deltaTime * _movementSpeed,
+                    0f, Y * Time.deltaTime * _movementSpeed);
+                transform.position += direction;
 
-            Quaternion dir = Quaternion.LookRotation(direction);
-            transform.rotation = Quaternion.Lerp(transform.rotation, dir, _rotationSpeed * Time.deltaTime);
+                Quaternion dir = Quaternion.LookRotation(direction);
+                transform.rotation = Quaternion.Lerp(transform.rotation, dir, _rotationSpeed * Time.deltaTime);
 
-            lastPos = transform.position;
-        }
-        else
-        {
-            transform.position = lastPos;
+                lastPos = transform.position;
+            }
+            else
+            {
+                transform.position = lastPos;
+            }
         }
     }
 
@@ -87,7 +95,11 @@ public class PlayerControllor : MonoBehaviour
         }
         if (col.gameObject.tag == "Enemy")
         {
-            //rb.AddForce(-transform.forward * 3f, ForceMode.Impulse);
+            Vector3 pos = new Vector3(0, 0, -5);
+            transform.position = Vector3.MoveTowards(transform.position,
+                 transform.position + pos, 2f);
+            rb.isKinematic = false;
+            StartCoroutine(CancelTrigger());
         }
     }
 
@@ -95,5 +107,18 @@ public class PlayerControllor : MonoBehaviour
     {
         yield return new WaitForSeconds(0.667f);
         animator.SetBool("isIdle", true);
+    }
+
+    IEnumerator CancelTrigger()
+    {
+        yield return new WaitForSeconds(1.5f);
+        if(transform.position.y >= 8)
+        {
+            rb.isKinematic = true;
+        }
+        if (transform.position.y < 8)
+        {
+            manager.IsLevelOver = true;
+        }
     }
 }

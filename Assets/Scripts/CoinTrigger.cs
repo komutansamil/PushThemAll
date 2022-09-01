@@ -5,9 +5,9 @@ using UnityEngine;
 public class CoinTrigger : MonoBehaviour
 {
     [SerializeField] private GameObject points_Obj;
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider col)
     {
-        if (collision.gameObject.tag == "Player")
+        if (col.gameObject.tag == "Player")
         {
             points_Obj.SetActive(true);
         }

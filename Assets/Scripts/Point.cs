@@ -5,6 +5,7 @@ using UnityEngine;
 public class Point : MonoBehaviour
 {
     [SerializeField] private Manager manager;
+    bool isTriggered = false;
     // Update is called once per frame
 
     void Start()
@@ -22,12 +23,16 @@ public class Point : MonoBehaviour
         transform.Rotate(Vector3.up * Time.deltaTime * 100f);
     }
 
-    void OnCollisionEnter(Collision collision)
+    void OnTriggerEnter(Collider trigger)
     {
-        if (collision.gameObject.tag == "Player")
+        if (trigger.gameObject.tag == "Player")
         {
-            manager.EarnedPoint += 30;
-            Destroy(this.gameObject);
+            if(!isTriggered)
+            {
+                manager.EarnedPoint += 30;
+                Destroy(this.gameObject);
+                isTriggered = true;
+            }
         }
     }
 }
